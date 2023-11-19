@@ -1,15 +1,27 @@
-const mysql = require('mysql');
+const sql = require('mssql');
 
-//Set database connection credentials
+
 const config = {
-    host: '127.0.0.1',
     user: 'yael',
-    password: 'qwerty',
-    database: 'api1',
-};
-
-//Create a MySQL pool
-const pool = mysql.createPool(config);
-
-//Export the pool
-module.exports = pool;
+    password: 'qwerty123',
+    database: 'api',
+    server: '127.0.0.1:1433',
+    pool: {
+        max: 10,
+        min: 0,
+        idleTimeoutMillis: 30000
+      },
+    options: {
+        encrypt: false, // for azure
+        trustServerCertificate: false // change to true for local dev / self-signed certs
+    },
+}
+module.exports = async function(req, res, next) {
+    try {
+      await sql.connect(sqlConfig);
+      next();
+    } catch (error) {
+      console.error('Error al conectar con la base de datos:', error);
+      res.status(500).send('Error de servidor');
+    }
+  };
