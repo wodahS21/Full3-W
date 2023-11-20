@@ -5,12 +5,13 @@ const router = app => {
     //Mostrar mensaje de bienvenida
     app.get('/', (request, response) => {
         response.send({
-            message: 'Bienvenido a Node.js Express REST API con MSSQL',
+             message: 'Bienvenido a Node.js Express REST API con MSSQL',
             link1: 'usuarios: yael.full.stack.com:3003/users',
             link2: 'productos: yael.full.stack.com:3003/productos',
             link3: 'ventas: yael.full.stack.com:3003/ventas'
         });
     });
+
 
     //Mostrar todos los usuarios
     app.get('/users', async (request, response) => {
@@ -84,7 +85,7 @@ const router = app => {
                 .input('IdU', sql.Int, IdU)
                 .input('Nombre', sql.VarChar(45), Nombre)
                 .input('Apellido', sql.VarChar(45), Apellido)
-                .query('UPDATE users SET IdU = @IdU, Nombre = @Nombre, Apellido = @Apellido');
+                .query('UPDATE users SET IdU = @IdU, Nombre = @Nombre, Apellido = @Apellido WHERE IdU = @IdU');
 
             response.send('User updated successfully');
         } catch (error) {
@@ -145,27 +146,26 @@ const router = app => {
 
     //Agregar un nuevo producto
     app.post('/productos', async (request, response) => {
-        const newProd = request.body;
+    const newProd = request.body;
 
-        try {
-            const pool = await sql.connect('./data/config');
+    try {
+        const pool = await sql.connect('./data/config');
 
-            const request = pool.request();
-            
-            // Asignar parámetros individualmente
-            request.input('IdProd', sql.Int, newProd.IdProd);
-            request.input('NomProd', sql.VarChar(45), newProd.NomProd);
-            request.input('stock', sql.Int, newProd.stock);
+        const request = pool.request();
+        
+        // Asignar parámetros individualmente
+        request.input('IdProd', sql.Int, newProd.IdProd);
+        request.input('NomProd', sql.VarChar(45), newProd.NomProd);
+        request.input('stock', sql.Int, newProd.stock);
 
-            const result = await request.query('INSERT INTO productos (IdProd, NomProd, stock) VALUES (@IdProd, @NomProd, @stock)');
+        const result = await request.query('INSERT INTO productos (IdProd, NomProd, stock) VALUES (@IdProd, @NomProd, @stock)');
 
-
-            response.status(201).send(`Product added with ID: ${IdProd}`);
-        } catch (error) {
-            console.error(error);
-            response.status(500).send('Error de servidor');
-        }
-    });
+        response.status(201).send(`Product added with ID: ${IdProd}`);
+    } catch (error) {
+        console.error(error);
+        response.status(500).send('Error de servidor');
+    }
+});
 
     // Actualizar un producto existente
     app.put('/productos/:IdProd', async (request, response) => {
