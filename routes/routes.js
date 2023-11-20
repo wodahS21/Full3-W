@@ -5,7 +5,10 @@ const router = app => {
     //Mostrar mensaje de bienvenida
     app.get('/', (request, response) => {
         response.send({
-            message: 'Bienvenido a Node.js Express REST API con MSSQL'
+            message: 'Bienvenido a Node.js Express REST API con MSSQL',
+            link1: 'usuarios: yael.full.stack.com:3003/users',
+            link2: 'productos: yael.full.stack.com:3003/productos',
+            link3: 'ventas: yael.full.stack.com:3003/ventas'
         });
     });
 
@@ -72,15 +75,15 @@ const router = app => {
     app.put('/users/:IdU', async (request, response) => {
         try {
             const IdU = request.params.IdU;
-            const newUser = request.body;
+            const {Nombre, Apellido} = request.body;
 
             const pool = await sql.connect('./data/config');
 
             const result = await pool
                 .request()
                 .input('IdU', sql.Int, IdU)
-                .input('Nombre', sql.VarChar(45), newUser.Nombre)
-                .input('Apellido', sql.VarChar(45), newUser.Apellido)
+                .input('Nombre', sql.VarChar(45), Nombre)
+                .input('Apellido', sql.VarChar(45), Apellido)
                 .query('UPDATE users SET IdU = @IdU, Nombre = @Nombre, Apellido = @Apellido');
 
             response.send('User updated successfully');
@@ -123,7 +126,7 @@ const router = app => {
     });
 
     // Mostrar un solo producto por ID
-    app.get('/productos/:IdProd ', async (request, response) => {
+    app.get('/productos/:IdProd', async (request, response) => {
         const IdProd = request.params.IdProd;
 
         try {
@@ -248,9 +251,9 @@ const router = app => {
             // Asignar parámetros individualmente
             request.input('IdVenta', sql.Int, newVenta.IdVenta);
             request.input('IdProd', sql.Int, newVenta.IdProd);
-            request.input('Vendedor', sql.VarChar(45), newVenta.Vendedor);
+            request.input('vendedor', sql.VarChar(45), newVenta.vendedor);
 
-            const result = await request.query('INSERT INTO ventas (IdVenta, IdProd, Vendedor) VALUES (@IdVenta, @IdProd, @Vendedor)');
+            const result = await request.query('INSERT INTO ventas (IdVenta, IdProd, vendedor) VALUES (@IdVenta, @IdProd, @vendedor)');
 
             response.status(201).send(`Venta added with ID: ${IdVenta}`);
         } catch (error) {
@@ -271,9 +274,9 @@ const router = app => {
                 .request()
                 .input('IdVenta', sql.Int, IdVenta)
                 .input('IdProd', sql.Int, newVenta.IdProd)
-                .input('Vendedor', sql.VarChar(45), newVenta.Vendedor)
+                .input('vendedor', sql.VarChar(45), newVenta.vendedor)
 
-                .query('UPDATE ventas SET IdVenta = @IdVenta, IdProd = @IdProd, Vendedor = @Vendedor');
+                .query('UPDATE ventas SET IdVenta = @IdVenta, IdProd = @IdProd, vendedor = @vendedor');
 
             response.send('Venta updated successfully');
         } catch (error) {

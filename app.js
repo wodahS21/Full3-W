@@ -1,6 +1,6 @@
 //Requiere packages and set the port
 const express = require('express');
-const port = 1433;
+const port = 3003;
 
 //Para emitir manejo de POST y PUT
 const bodyParser = require('body-parser');
@@ -23,4 +23,5 @@ const server = app.listen(port, (error) => {
     if (error) return console.log(`Error: ${error}`);
         
     console.log(`El servidor escucha en el puerto ${server.address().port}`);
+    
 });
